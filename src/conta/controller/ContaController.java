@@ -12,7 +12,7 @@ public class ContaController implements ContaRepository {
 	@Override
 	public void procurarPorNumero(int numero) {
 		var conta = buscarNaCollection(numero);
-		
+
 		if (conta != null) {
 			conta.visualizar();
 		} else {
@@ -37,20 +37,20 @@ public class ContaController implements ContaRepository {
 	@Override
 	public void atualizar(Conta conta) {
 		var buscaConta = buscarNaCollection(conta.getNumero());
-		
+
 		if (buscaConta != null) {
 			listaContas.set(listaContas.indexOf(buscaConta), conta);
 			System.out.println("\nA Conta número: " + conta.getNumero() + " foi atualizado com sucesso!");
 		} else {
 			System.out.println("\nA Conta número: " + conta.getNumero() + "  não foi encontrada!");
 		}
-		
+
 	}
 
 	@Override
 	public void deletar(int numero) {
 		var conta = buscarNaCollection(numero);
-		
+
 		if (conta != null) {
 			if (listaContas.remove(conta) == true) {
 				System.out.println("\nA Conta número: " + numero + " foi deletada com sucesso!");
@@ -58,21 +58,54 @@ public class ContaController implements ContaRepository {
 		} else {
 			System.out.println("\nA Conta número: " + numero + " não foi encontrada!");
 		}
-		
+
 	}
 
 	@Override
 	public void sacar(int numero, float valor) {
+		var buscaConta = buscarNaCollection(numero);
+
+		if (buscaConta != null) {
+
+			if (listaContas.get(listaContas.indexOf(buscaConta)).sacar(valor) == true) {
+				System.out.println("\nO Saque na Conta numero: " + numero + " foi efetuado com sucesso!");
+			}
+
+		} else {
+			System.out.println("\nA Conta numero: " + numero + " não foi encontrada!");
+		}
 
 	}
 
 	@Override
 	public void depositar(int numero, float valor) {
+		var buscaConta = buscarNaCollection(numero);
+
+		if (buscaConta != null) {
+			var indiceConta = listaContas.indexOf(buscaConta);
+			listaContas.get(indiceConta).depositar(valor);
+			System.out.println("\nO Depósito na Conta Numero: " + numero + " foi efetuado com sucesso!");
+		} else {
+			System.out.println(
+					"\na Conta Numero: " + numero + " não foi encontrada ou a Conta destino não é uma Conta Corrente!");
+		}
 
 	}
 
 	@Override
 	public void transferir(int numeroOrigem, int numeroDestino, float valor) {
+		var buscaContaOrigem = buscarNaCollection(numeroOrigem);
+		var buscaContaDestino = buscarNaCollection(numeroDestino);
+
+		if (buscaContaOrigem != null && buscaContaDestino != null) {
+
+			if (listaContas.get(listaContas.indexOf(buscaContaOrigem)).sacar(valor) == true) {
+				listaContas.get(listaContas.indexOf(buscaContaDestino)).depositar(valor);
+				System.out.println("\nA Transferência foi efetuado com sucesso!");
+			}
+		} else {
+			System.out.println("\nA Conta de Origem e/ou Destino não foram encontradas!");
+		}
 
 	}
 
@@ -96,9 +129,8 @@ public class ContaController implements ContaRepository {
 				return conta.getTipo();
 			}
 		}
-		
+
 		return 0;
 	}
-	
-	
+
 }
